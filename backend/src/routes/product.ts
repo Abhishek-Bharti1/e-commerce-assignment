@@ -1,55 +1,46 @@
-import mongoose from "mongoose";
+import express from "express";
+import {
+  allReviewsOfProduct,
+  deleteProduct,
+  deleteReview,
+  getAdminProducts,
+  getAllCategories,
+  getAllProducts,
+  getSingleProduct,
+  getlatestProducts,
+  newProduct,
+  newReview,
+  updateProduct,
+} from "../controllers/product.js";
+import { adminOnly } from "../middlewares/auth.js";
+import { mutliUpload } from "../middlewares/multer.js";
 
-const schema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "Please enter Name"],
-    },
-    photos: [
-      {
-        public_id: {
-          type: String,
-          required: [true, "Please enter Public ID"],
-        },
-        url: {
-          type: String,
-          required: [true, "Please enter URL"],
-        },
-      },
-    ],
-    price: {
-      type: Number,
-      required: [true, "Please enter Price"],
-    },
-    stock: {
-      type: Number,
-      required: [true, "Please enter Stock"],
-    },
-    category: {
-      type: String,
-      required: [true, "Please enter Category"],
-      trim: true,
-    },
+const app = express.Router();
 
-    description: {
-      type: String,
-      required: [true, "Please enter Description"],
-    },
+//To Create New Product  - /api/v1/product/new
+app.post("/new", adminOnly, mutliUpload, newProduct);
 
-    ratings: {
-      type: Number,
-      default: 0,
-    },
+//To get all Products with filters  - /api/v1/product/all
+app.get("/all", getAllProducts);
 
-    numOfReviews: {
-      type: Number,
-      default: 0,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+//To get last 10 Products  - /api/v1/product/latest
+app.get("/latest", getlatestProducts);
 
-export const Product = mongoose.model("Product", schema);
+//To get all unique Categories  - /api/v1/product/categories
+app.get("/categories", getAllCategories);
+
+//To get all Products   - /api/v1/product/admin-products
+app.get("/admin-products", adminOnly, getAdminProducts);
+
+// To get, update, delete Product
+app
+  .route("/:id")
+  .get(getSingleProduct)
+  .put(adminOnly, mutliUpload, updateProduct)
+  .delete(adminOnly, deleteProduct);
+
+app.get("/reviews/:id", allReviewsOfProduct);
+app.post("/review/new/:id", newReview);
+app.delete("/review/:id", deleteReview);
+
+export default app;
