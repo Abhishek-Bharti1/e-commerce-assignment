@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { redis, redisTTL } from "../app.js";
 import { TryCatch } from "../middlewares/error.js";
-import { Product } from "../models/product.js";
+import { Product } from "../models/products.js";
 import { Review } from "../models/review.js";
 import { User } from "../models/user.js";
 import {
@@ -146,7 +146,7 @@ export const updateProduct = TryCatch(async (req, res, next) => {
 
     await deleteFromCloudinary(ids);
 
-    product.photos = photosURL;
+    // product.photos = photosURL;
   }
 
   if (name) product.name = name;
