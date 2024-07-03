@@ -54,7 +54,13 @@ export const getLastMonths = () => {
   };
 };
 
-export const transformImage = (url: string, width = 200) => {
-  const newUrl = url.replace("upload/", `upload/dpr_auto/w_${width}/`);
+export const transformImage = (url: string | undefined, width = 200) => {
+  if (typeof url !== 'string') {
+    console.error('Invalid URL:', url);
+    return '';
+  }
+
+  const normalizedUrl = url.replace(/\\/g, "/"); // Replace backslashes with forward slashes
+  const newUrl = normalizedUrl.replace("uploads/", `uploads/dpr_auto/w_${width}/`);
   return newUrl;
 };
